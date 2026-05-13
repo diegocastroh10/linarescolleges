@@ -1,0 +1,66 @@
+# === Archivos Sensibles ===
+CREDENCIALES_LOGIN.txt
+.env
+.env.local
+.env.production
+
+# === Carpetas de Node ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.eslintcache
+
+# === Build Outputs ===
+dist/
+build/
+.next/
+out/
+
+# === Angular ===
+.angular/
+.angular-cache/
+
+# === IDEs y Editores ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# === Logs ===
+logs/
+*.log
+
+# === Coverage ===
+coverage/
+*.lcov
+.nyc_output
+
+# === Temporal ===
+*.tmp
+*.temp
+temp/
+tmp/
+
+# === Sistema Operativo ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# === MongoDB ===
+data/
+dump/
+
+# === Otros ===
+*.pid
+*.seed
+*.pid.lock

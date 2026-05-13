@@ -1,0 +1,43 @@
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-section">
+      <h3>Linares Colleges</h3>
+      <p>Club de baloncesto comprometido con la excelencia deportiva y el desarrollo integral de nuestros jugadores.</p>
+    </div>
+
+    <div class="footer-section">
+      <h4>Enlaces Rápidos</h4>
+      <ul>
+        <li><a routerLink="/inicio">Inicio</a></li>
+        <li><a routerLink="/entrenamientos">Entrenamientos</a></li>
+        <li><a routerLink="/galerias">Galerías</a></li>
+        <li><a routerLink="/noticias">Noticias</a></li>
+        <li><a routerLink="/historia">Historia</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4>Redes Sociales</h4>
+      <div class="social-links">
+        @for (social of socialLinks; track social.name) {
+          <a [href]="social.url" target="_blank" [attr.aria-label]="social.name">
+            <span class="icon">{{ social.icon }}</span>
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h4>Auspiciadores</h4>
+      <ul class="sponsors">
+        @for (sponsor of sponsors; track sponsor) {
+          <li>{{ sponsor }}</li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {{ currentYear }} Linares Colleges. Todos los derechos reservados.</p>
+  </div>
+</footer>

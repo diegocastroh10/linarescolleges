@@ -1,0 +1,209 @@
+<div class="perfil-page">
+  @if (cargando()) {
+    <div class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3">Cargando perfil...</p>
+    </div>
+  } @else if (usuario()) {
+    <!-- Header del perfil con foto de portada -->
+    <div class="perfil-header">
+      <div class="basketball-pattern"></div>
+      <div class="header-content">
+        <h1>🏀 Mi Perfil</h1>
+        <p>{{ usuario()!.nombrePersonal }}</p>
+      </div>
+    </div>
+
+    <!-- Sección principal del perfil -->
+    <div class="perfil-container">
+      <!-- Tarjeta de foto de perfil -->
+      <div class="foto-perfil-card">
+        <div class="foto-wrapper">
+          @if (usuario()!.fotoPerfil) {
+            <img [src]="usuario()!.fotoPerfil" [alt]="usuario()!.nombrePersonal" class="foto-perfil" />
+          } @else {
+            <div class="avatar-placeholder">
+              {{ obtenerIniciales() }}
+            </div>
+          }
+          
+          <label for="fotoInput" class="btn-cambiar-foto" [class.disabled]="subiendoFoto()">
+            @if (subiendoFoto()) {
+              <span class="spinner-border spinner-border-sm"></span>
+            } @else {
+              <i class="bi bi-camera-fill"></i>
+            }
+          </label>
+          <input 
+            type="file" 
+            id="fotoInput" 
+            accept="image/*" 
+            (change)="onFileSelected($event)"
+            style="display: none;"
+          />
+        </div>
+        
+        <div class="perfil-info-basica">
+          <h2>{{ usuario()!.nombrePersonal }}</h2>
+          <p class="username">{{ '@' + usuario()!.nombreUsuario }}</p>
+          <span class="badge" [ngClass]="getRolBadgeClass()">
+            {{ usuario()!.rol }}
+          </span>
+        </div>
+
+        @if (error()) {
+          <div class="alert alert-danger mt-3">
+            {{ error() }}
+          </div>
+        }
+      </div>
+
+      <!-- Información del jugador -->
+      <div class="info-card">
+        <div class="card-header">
+          <h3>
+            <i class="bi bi-person-badge"></i>
+            Información Personal
+          </h3>
+          <button class="btn-editar" (click)="editarPerfil()" title="Editar perfil">
+            <i class="bi bi-pencil-square"></i>
+            Editar
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-item">
+              <i class="bi bi-envelope"></i>
+              <div>
+                <label>Email</label>
+                <p>{{ usuario()!.email }}</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-card-text"></i>
+              <div>
+                <label>RUT</label>
+                <p>{{ usuario()!.rut }}</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-telephone"></i>
+              <div>
+                <label>Teléfono</label>
+                <p>{{ usuario()!.telefono }}</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-geo-alt"></i>
+              <div>
+                <label>Dirección</label>
+                <p>{{ usuario()!.direccion }}</p>
+              </div>
+            </div>
+            @if (usuario()!.fechaNacimiento) {
+              <div class="info-item">
+                <i class="bi bi-cake2"></i>
+                <div>
+                  <label>Fecha de Nacimiento</label>
+                  <p>{{ usuario()!.fechaNacimiento | date:'dd/MM/yyyy':'UTC' }} ({{ calcularEdad() }} años)</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Información de baloncesto -->
+      <div class="info-card basketball-card">
+        <div class="card-header">
+          <h3>
+            <i class="bi bi-trophy"></i>
+            Información de Baloncesto
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="basketball-info">
+            <div class="posicion-highlight">
+              <div class="basketball-icon">🏀</div>
+              <div>
+                <label>Posición</label>
+                <h4>{{ usuario()!.posicion }}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información del apoderado -->
+      @if (usuario()!.nombreApoderado || usuario()!.telefonoApoderado) {
+        <div class="info-card">
+          <div class="card-header">
+            <h3>
+              <i class="bi bi-person-check"></i>
+              Información del Apoderado
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="info-grid">
+              @if (usuario()!.nombreApoderado) {
+                <div class="info-item">
+                  <i class="bi bi-person"></i>
+                  <div>
+                    <label>Nombre</label>
+                    <p>{{ usuario()!.nombreApoderado }}</p>
+                  </div>
+                </div>
+              }
+              @if (usuario()!.telefonoApoderado) {
+                <div class="info-item">
+                  <i class="bi bi-telephone"></i>
+                  <div>
+                    <label>Teléfono</label>
+                    <p>{{ usuario()!.telefonoApoderado }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Información de la cuenta -->
+      <div class="info-card">
+        <div class="card-header">
+          <h3>
+            <i class="bi bi-shield-check"></i>
+            Información de la Cuenta
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-item">
+              <i class="bi bi-calendar-check"></i>
+              <div>
+                <label>Miembro desde</label>
+                <p>{{ usuario()!.fechaCreacion | date:'dd/MM/yyyy' }}</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-shield"></i>
+              <div>
+                <label>Rol</label>
+                <p class="text-capitalize">{{ usuario()!.rol }}</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-check-circle"></i>
+              <div>
+                <label>Estado</label>
+                <p class="text-success">Activo</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

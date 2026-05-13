@@ -1,0 +1,135 @@
+<div class="noticias-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>📰 Noticias del Club</h1>
+      <p>Mantente informado sobre las últimas novedades</p>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  @if (cargando()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando noticias...</p>
+    </div>
+  }
+
+  <!-- Listado de noticias -->
+  @if (!cargando() && !noticiaSeleccionada()) {
+    <section class="noticias-section">
+      <div class="container">
+        @if (noticias().length > 0) {
+          <div class="noticias-grid">
+            @for (noticia of noticias(); track noticia._id) {
+              <article class="noticia-card" (click)="verNoticia(noticia)">
+                <div class="noticia-imagen" 
+                     [class.horizontal]="noticia.orientacionImagen === 'horizontal'"
+                     [class.vertical]="noticia.orientacionImagen === 'vertical'">
+                  <img [src]="noticia.imagenPortada" [alt]="noticia.titulo">
+                  <div class="overlay">
+                    <span class="ver-mas">👁️ Ver más</span>
+                  </div>
+                </div>
+                
+                <div class="noticia-contenido">
+                  <h2>{{ noticia.titulo }}</h2>
+                  
+                  <div class="noticia-metadata">
+                    <span class="autor">👤 {{ noticia.autor }}</span>
+                    <span class="fecha">📅 {{ formatearFecha(noticia.fechaPublicacion) }}</span>
+                    <span class="visitas">👁️ {{ noticia.visitas }} visitas</span>
+                  </div>
+                  
+                  <p class="noticia-extracto">{{ extraerTexto(noticia.contenido) }}</p>
+                  
+                  <button class="btn-leer-mas">Leer más →</button>
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <div class="empty-icon">📰</div>
+            <h3>No hay noticias disponibles</h3>
+            <p>Vuelve pronto para ver las últimas novedades</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Detalle de noticia -->
+  @if (noticiaSeleccionada()) {
+    <section class="detalle-noticia">
+      <div class="container">
+        <button class="btn-volver" (click)="cerrarDetalleNoticia()">
+          ← Volver a noticias
+        </button>
+        
+        <article class="noticia-completa">
+          <header class="noticia-header">
+            <h1>{{ noticiaSeleccionada()!.titulo }}</h1>
+            
+            <div class="noticia-metadata-detalle">
+              <span class="autor">👤 Por {{ noticiaSeleccionada()!.autor }}</span>
+              <span class="fecha">📅 {{ formatearFecha(noticiaSeleccionada()!.fechaPublicacion) }}</span>
+              <span class="visitas">👁️ {{ noticiaSeleccionada()!.visitas }} visitas</span>
+            </div>
+          </header>
+          
+          <div class="noticia-imagen-destacada" 
+               [class.horizontal]="noticiaSeleccionada()!.orientacionImagen === 'horizontal'"
+               [class.vertical]="noticiaSeleccionada()!.orientacionImagen === 'vertical'">
+            <img [src]="noticiaSeleccionada()!.imagenPortada" [alt]="noticiaSeleccionada()!.titulo">
+          </div>
+          
+          <div class="noticia-cuerpo">
+            <div class="contenido-html" [innerHTML]="noticiaSeleccionada()!.contenido"></div>
+            
+            @if (noticiaSeleccionada()!.urlInstagram) {
+              <div class="instagram-embed">
+                <h3>📸 Instagram</h3>
+                <a [href]="noticiaSeleccionada()!.urlInstagram" target="_blank" class="instagram-link">
+                  Ver publicación en Instagram →
+                </a>
+              </div>
+            }
+            
+            @if (noticiaSeleccionada()!.auspiciadores.length > 0) {
+              <div class="auspiciadores-section">
+                <h3>🏆 Auspiciadores</h3>
+                <div class="auspiciadores-grid">
+                  @for (logo of noticiaSeleccionada()!.auspiciadores; track $index) {
+                    <div class="auspiciador-logo">
+                      <img [src]="logo" alt="Logo auspiciador">
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </article>
+        
+        @if (noticiasRecientes().length > 0) {
+          <aside class="noticias-relacionadas">
+            <h3>📰 Últimas noticias</h3>
+            <div class="relacionadas-grid">
+              @for (noticia of noticiasRecientes(); track noticia._id) {
+                @if (noticia._id !== noticiaSeleccionada()?._id) {
+                  <div class="noticia-mini" (click)="verNoticia(noticia)">
+                    <img [src]="noticia.imagenPortada" [alt]="noticia.titulo">
+                    <div class="mini-info">
+                      <h4>{{ noticia.titulo }}</h4>
+                      <span class="mini-fecha">{{ formatearFecha(noticia.fechaPublicacion) }}</span>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </aside>
+        }
+      </div>
+    </section>
+  }
+</div>

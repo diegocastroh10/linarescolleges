@@ -1,0 +1,247 @@
+{
+  "info": {
+    "name": "Linares Colleges API",
+    "_postman_id": "linares-colleges-api",
+    "description": "API REST para gestión de usuarios de Linares Colleges",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Registrar Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jugador@linarescolleges.cl\",\n  \"password\": \"password123\",\n  \"nombrePersonal\": \"Juan Pérez López\",\n  \"nombreUsuario\": \"juanp\",\n  \"rut\": \"12345678-9\",\n  \"fechaNacimiento\": \"1995-05-15\",\n  \"posicion\": \"Base\",\n  \"telefono\": \"+56912345678\",\n  \"direccion\": \"Av. Libertad 123\",\n  \"nombreApoderado\": \"María López\",\n  \"telefonoApoderado\": \"+56987654321\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"diegocastroh10@hotmail.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultas (GET)",
+      "item": [
+        {
+          "name": "Obtener Todos los Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Usuario por RUT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/rut/19133754-9",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "rut", "19133754-9"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Usuario por Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/email/diegocastroh10@hotmail.com",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "email", "diegocastroh10@hotmail.com"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Usuario por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/id/551b1468-08b0-4290-bf26-a6b03eb2ca90",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "id", "551b1468-08b0-4290-bf26-a6b03eb2ca90"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actualización (PUT)",
+      "item": [
+        {
+          "name": "Editar Usuario por RUT",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"+56987654321\",\n  \"posicion\": \"Escolta\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/rut/19133754-9",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "rut", "19133754-9"]
+            }
+          }
+        },
+        {
+          "name": "Editar Usuario por Email",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePersonal\": \"Diego Castro Herrera - Actualizado\",\n  \"direccion\": \"Nueva Dirección 456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/email/diegocastroh10@hotmail.com",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "email", "diegocastroh10@hotmail.com"]
+            }
+          }
+        },
+        {
+          "name": "Editar Usuario por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"+56999888777\",\n  \"direccion\": \"Calle Actualizada 789\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/id/551b1468-08b0-4290-bf26-a6b03eb2ca90",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "id", "551b1468-08b0-4290-bf26-a6b03eb2ca90"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eliminación (DELETE)",
+      "item": [
+        {
+          "name": "Desactivar Cuenta (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isAdmin\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/desactivar/12345678-9",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "desactivar", "12345678-9"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Usuario Permanentemente (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isAdmin\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/usuarios/id/551b1468-08b0-4290-bf26-a6b03eb2ca90",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "usuarios", "id", "551b1468-08b0-4290-bf26-a6b03eb2ca90"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

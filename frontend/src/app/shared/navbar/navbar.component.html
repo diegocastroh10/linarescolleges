@@ -1,0 +1,46 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <a routerLink="/inicio" class="logo">
+        <span class="logo-text">Linares Colleges</span>
+      </a>
+    </div>
+
+    <button 
+      class="hamburger" 
+      [class.active]="mobileMenuOpen()"
+      (click)="toggleMobileMenu()"
+      aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="navbar-menu" [class.active]="mobileMenuOpen()">
+      <div class="navbar-links">
+        <a routerLink="/inicio" routerLinkActive="active" (click)="closeMobileMenu()">Inicio</a>
+        <a routerLink="/entrenamientos" routerLinkActive="active" (click)="closeMobileMenu()">Entrenamientos</a>
+        <a routerLink="/galerias" routerLinkActive="active" (click)="closeMobileMenu()">Galerías</a>
+        <a routerLink="/noticias" routerLinkActive="active" (click)="closeMobileMenu()">Noticias</a>
+        <a routerLink="/historia" routerLinkActive="active" (click)="closeMobileMenu()">Historia</a>
+      </div>
+
+      <div class="navbar-auth">
+        @if (authService.isAuthenticated()) {
+          <a routerLink="/perfil" routerLinkActive="active" class="btn-profile" (click)="closeMobileMenu()">
+            <span class="user-name">{{ authService.currentUser()?.nombreUsuario }}</span>
+          </a>
+          @if (authService.isAdmin()) {
+            <a routerLink="/admin" routerLinkActive="active" class="btn btn-admin" (click)="closeMobileMenu()">
+              Panel Admin
+            </a>
+          }
+          <button class="btn btn-logout" (click)="logout()">Cerrar Sesión</button>
+        } @else {
+          <a routerLink="/login" class="btn btn-login" (click)="closeMobileMenu()">Iniciar Sesión</a>
+          <a routerLink="/register" class="btn btn-register" (click)="closeMobileMenu()">Registrarse</a>
+        }
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,121 @@
+<div class="login-container">
+  <div class="basketball-court-bg"></div>
+  
+  <div class="login-card">
+    <div class="card-header">
+      <div class="basketball-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <path d="M86.6 64l85.2 85.2C194.5 121.7 208 86.4 208 48c0-14.7-2-28.9-5.7-42.4C158.6 15 119.8 35.5 86.6 64zM64 86.6C35.5 119.8 15 158.6 5.6 202.3C19.1 206 33.3 208 48 208c38.4 0 73.7-13.5 101.3-36.1L64 86.6zM256 0c-7.3 0-14.6 .3-21.8 .9C238 16 240 31.8 240 48c0 47.3-17.1 90.5-45.4 124L256 233.4 425.4 64C380.2 24.2 320.9 0 256 0zM48 240c-16.2 0-32-2-47.1-5.8C.3 241.4 0 248.7 0 256c0 64.9 24.2 124.2 64 169.4L233.4 256 172 194.6C138.5 222.9 95.3 240 48 240zm463.1 37.8c.6-7.2 .9-14.5 .9-21.8c0-64.9-24.2-124.2-64-169.4L278.6 256 340 317.4c33.4-28.3 76.7-45.4 124-45.4c16.2 0 32 2 47.1 5.8zm-4.7 31.9C492.9 306 478.7 304 464 304c-38.4 0-73.7 13.5-101.3 36.1L448 425.4c28.5-33.2 49-72 58.4-115.7zM340 317.4L254.6 403.1C282.3 445.1 315.7 480.8 356.3 506.3C398.6 507.4 439.6 497.5 477.4 477.4L340 317.4zm-85.4 22l-22 22C265.1 395.7 289.2 418.8 320 441.4c29.2 21.4 63.3 37.6 100.3 46.5C400.9 499.5 375.4 507.6 348 510.3 313.7 496.5 282.7 474.5 256 446.6 229.3 474.5 198.3 496.5 164 510.3 136.6 507.6 111.1 499.5 91.7 487.9c37-8.9 71.1-25.1 100.3-46.5c30.8-22.6 54.9-45.7 87.4-79.9l-22-22-2.9 2.9zm-64.9 67.9C163.3 445.1 129.9 480.8 89.3 506.3C47 507.4 6 497.5-31.8 477.4L-169.4 340c28.5 33.2 49 72 58.4 115.7C-125.7 451.9-139.9 449.9-154.6 449.9c-47.3 0-90.5 17.1-124 45.4L-340 557.4 86.6 64z"/>
+        </svg>
+      </div>
+      <h1>Iniciar Sesión</h1>
+      <p class="subtitle">LINARES COLLEGES</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Email Input -->
+      <div class="form-group">
+        <label for="email" class="form-label">
+          <i class="bi bi-envelope"></i> Correo Electrónico
+        </label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-control"
+          [class.is-invalid]="email?.invalid && email?.touched"
+          [class.is-valid]="email?.valid && email?.touched"
+          placeholder="tu@email.com"
+        />
+        <div class="invalid-feedback" *ngIf="email?.invalid && email?.touched">
+          <p class="error-text" *ngIf="email?.errors?.['required']">
+            ⚠️ El correo electrónico es obligatorio
+          </p>
+          <p class="error-text" *ngIf="email?.errors?.['email'] || email?.errors?.['pattern']">
+            ⚠️ Ingresa un correo válido (ejemplo: usuario&#64;dominio.com)
+          </p>
+        </div>
+      </div>
+
+      <!-- Password Input -->
+      <div class="form-group">
+        <label for="password" class="form-label">
+          <i class="bi bi-lock"></i> Contraseña
+        </label>
+        <div class="password-input-wrapper">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="form-control"
+            [class.is-invalid]="password?.invalid && password?.touched"
+            [class.is-valid]="password?.valid && password?.touched"
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            class="btn-toggle-password"
+            (click)="togglePasswordVisibility()"
+          >
+            <i [class]="showPassword() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+        <div class="invalid-feedback" *ngIf="password?.invalid && password?.touched">
+          <p class="error-text" *ngIf="password?.errors?.['required']">
+            ⚠️ La contraseña es obligatoria
+          </p>
+          <p class="error-text" *ngIf="password?.errors?.['minlength']">
+            ⚠️ Mínimo 6 caracteres
+          </p>
+          <p class="error-text" *ngIf="password?.errors?.['pattern']">
+            ⚠️ Debe incluir: mayúscula, minúscula, número y carácter especial
+          </p>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="alert alert-danger" *ngIf="errorMessage()">
+        <i class="bi bi-exclamation-triangle"></i> {{ errorMessage() }}
+      </div>
+
+      <!-- Forgot Password Link -->
+      <div class="forgot-password">
+        <a routerLink="/recuperar-contrasena" class="link-secondary">
+          ¿Olvidaste tu contraseña?
+        </a>
+      </div>
+
+      <!-- Buttons -->
+      <div class="form-buttons">
+        <button
+          type="submit"
+          class="btn btn-primary btn-login"
+          [disabled]="isLoading()"
+        >
+          <span *ngIf="!isLoading()">
+            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+          </span>
+          <span *ngIf="isLoading()" class="spinner-border spinner-border-sm me-2"></span>
+          <span *ngIf="isLoading()">Cargando...</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-cancel"
+          (click)="onCancel()"
+          [disabled]="isLoading()"
+        >
+          <i class="bi bi-x-circle"></i> Cancelar
+        </button>
+      </div>
+
+      <!-- Register Link -->
+      <div class="register-link">
+        <p>¿No tienes una cuenta?</p>
+        <a routerLink="/register" class="link-primary">
+          Regístrate aquí
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

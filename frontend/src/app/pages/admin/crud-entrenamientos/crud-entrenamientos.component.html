@@ -1,0 +1,304 @@
+<div class="crud-entrenamientos-page">
+  <!-- Header -->
+  <div class="page-header">
+    <h1><i class="bi bi-calendar-week"></i> Gestión de Entrenamientos</h1>
+    <button class="btn btn-primary" (click)="abrirModalCrear()">
+      <i class="bi bi-plus-circle"></i>
+      Agregar entrenamiento
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (cargando()) {
+    <div class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3">Cargando entrenamientos...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="alert alert-danger">
+      <i class="bi bi-exclamation-triangle"></i>
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Tablas por día -->
+  @if (!cargando()) {
+    <div class="dias-container">
+      @for (dia of DIAS_SEMANA; track dia) {
+        <div class="dia-card">
+          <div class="dia-header">
+            <h3>{{ dia }}</h3>
+            <span class="badge bg-secondary">
+              {{ obtenerEntrenamientosPorDia(dia).length }} entrenamiento(s)
+            </span>
+          </div>
+
+          <div class="tabla-responsive">
+            @if (obtenerEntrenamientosPorDia(dia).length > 0) {
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Horario</th>
+                    <th>Categorías</th>
+                    <th>Lugar</th>
+                    <th>Profesor</th>
+                    <th>Nivel</th>
+                    <th>Observaciones</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (entrenamiento of obtenerEntrenamientosPorDia(dia); track entrenamiento._id) {
+                    <tr>
+                      <td class="horario-cell">
+                        <i class="bi bi-clock"></i>
+                        <strong>{{ entrenamiento.horario }}</strong>
+                      </td>
+                      <td class="categorias-cell">
+                        @for (categoria of entrenamiento.categorias; track categoria) {
+                          <span class="badge bg-info">{{ categoria }}</span>
+                        }
+                      </td>
+                      <td>
+                        <i class="bi bi-geo-alt"></i>
+                        {{ entrenamiento.lugar }}
+                      </td>
+                      <td>
+                        <i class="bi bi-person-badge"></i>
+                        {{ entrenamiento.profesorACargo }}
+                      </td>
+                      <td class="nivel-cell">
+                        <span [class]="getNivelBadgeClass(entrenamiento.nivel)">
+                          <i class="bi bi-bar-chart"></i>
+                          {{ entrenamiento.nivel }}
+                        </span>
+                      </td>
+                      <td class="observaciones-cell">
+                        {{ entrenamiento.observaciones || '-' }}
+                      </td>
+                      <td class="acciones-cell">
+                        <button 
+                          class="btn btn-sm btn-warning" 
+                          (click)="abrirModalEditar(entrenamiento)"
+                          title="Editar">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button 
+                          class="btn btn-sm btn-danger" 
+                          (click)="abrirModalEliminar(entrenamiento)"
+                          title="Eliminar">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <div class="sin-entrenamientos">
+                <i class="bi bi-calendar-x"></i>
+                <p>No hay entrenamientos programados</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Modal de Crear/Editar -->
+  @if (mostrarModal()) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>
+            @if (modoEdicion()) {
+              <i class="bi bi-pencil-square"></i> Editar Entrenamiento
+            } @else {
+              <i class="bi bi-plus-circle"></i> Nuevo Entrenamiento
+            }
+          </h2>
+          <button class="btn-close" (click)="cerrarModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form>
+            <!-- Día -->
+            <div class="form-group">
+              <label for="dia">Día de la semana *</label>
+              <select 
+                id="dia" 
+                class="form-control" 
+                [(ngModel)]="formulario.dia"
+                name="dia"
+                required>
+                @for (dia of DIAS_SEMANA; track dia) {
+                  <option [value]="dia">{{ dia }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Categorías (selección múltiple) -->
+            <div class="form-group">
+              <label>Categorías * (selecciona una o más)</label>
+              <div class="categorias-grid">
+                @for (categoria of CATEGORIAS; track categoria) {
+                  <div class="categoria-checkbox">
+                    <input 
+                      type="checkbox" 
+                      [id]="'cat-' + categoria"
+                      [checked]="isCategoriaSeleccionada(categoria)"
+                      (change)="toggleCategoria(categoria)">
+                    <label [for]="'cat-' + categoria">
+                      {{ categoria }}
+                    </label>
+                  </div>
+                }
+              </div>
+              <small class="text-muted">
+                {{ formulario.categorias.length }} categoría(s) seleccionada(s)
+              </small>
+            </div>
+
+            <!-- Horario -->
+            <div class="form-group">
+              <label for="horario">Horario *</label>
+              <input 
+                type="text" 
+                id="horario" 
+                class="form-control" 
+                [(ngModel)]="formulario.horario"
+                name="horario"
+                placeholder="Ej: 17:00 o 17:00-19:00"
+                required>
+              <small class="text-muted">Formato: 17:00 o 17:00-19:00</small>
+            </div>
+
+            <!-- Lugar -->
+            <div class="form-group">
+              <label for="lugar">Lugar *</label>
+              <input 
+                type="text" 
+                id="lugar" 
+                class="form-control" 
+                [(ngModel)]="formulario.lugar"
+                name="lugar"
+                placeholder="Ej: Gimnasio Municipal"
+                required>
+            </div>
+
+            <!-- Profesor a cargo -->
+            <div class="form-group">
+              <label for="profesor">Profesor a cargo *</label>
+              <input 
+                type="text" 
+                id="profesor" 
+                class="form-control" 
+                [(ngModel)]="formulario.profesorACargo"
+                name="profesor"
+                placeholder="Nombre del profesor"
+                required>
+            </div>
+
+            <!-- Nivel -->
+            <div class="form-group">
+              <label for="nivel">Nivel de entrenamiento *</label>
+              <select 
+                id="nivel" 
+                class="form-control" 
+                [(ngModel)]="formulario.nivel"
+                name="nivel"
+                required>
+                @for (nivel of NIVELES; track nivel) {
+                  <option [value]="nivel">{{ nivel }}</option>
+                }
+              </select>
+              <small class="text-muted">Indica el nivel de conocimiento requerido para los postulantes</small>
+            </div>
+
+            <!-- Observaciones -->
+            <div class="form-group">
+              <label for="observaciones">Observaciones</label>
+              <textarea 
+                id="observaciones" 
+                class="form-control" 
+                [(ngModel)]="formulario.observaciones"
+                name="observaciones"
+                rows="3"
+                placeholder="Observaciones opcionales..."></textarea>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cerrarModal()" [disabled]="cargando()">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" (click)="guardar()" [disabled]="cargando()">
+            @if (cargando()) {
+              <span class="spinner-border spinner-border-sm"></span>
+              Guardando...
+            } @else {
+              @if (modoEdicion()) {
+                Actualizar
+              } @else {
+                Crear
+              }
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal de Confirmación de Eliminación -->
+  @if (mostrarModalEliminar()) {
+    <div class="modal-overlay" (click)="cerrarModalEliminar()">
+      <div class="modal-content modal-small" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>
+            <i class="bi bi-exclamation-triangle text-danger"></i>
+            Confirmar Eliminación
+          </h2>
+          <button class="btn-close" (click)="cerrarModalEliminar()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas eliminar este entrenamiento?</p>
+          @if (entrenamientoAEliminar()) {
+            <div class="entrenamiento-info">
+              <p><strong>Día:</strong> {{ entrenamientoAEliminar()!.dia }}</p>
+              <p><strong>Horario:</strong> {{ entrenamientoAEliminar()!.horario }}</p>
+              <p><strong>Categorías:</strong> {{ formatearCategorias(entrenamientoAEliminar()!.categorias) }}</p>
+            </div>
+          }
+          <p class="text-danger"><strong>Esta acción no se puede deshacer.</strong></p>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cerrarModalEliminar()" [disabled]="cargando()">
+            Cancelar
+          </button>
+          <button class="btn btn-danger" (click)="confirmarEliminar()" [disabled]="cargando()">
+            @if (cargando()) {
+              <span class="spinner-border spinner-border-sm"></span>
+              Eliminando...
+            } @else {
+              Eliminar
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

@@ -1,0 +1,212 @@
+<div class="entrenamientos-page">
+  <!-- Hero Header -->
+  <div class="hero-header">
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="bi bi-calendar3"></i>
+      </div>
+      <h1>Horarios de Entrenamientos</h1>
+      <p>Encuentra el entrenamiento perfecto para ti según tu nivel y categoría</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (cargando()) {
+    <div class="loading-section">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p>Cargando horarios de entrenamientos...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="error-section">
+      <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ error() }}
+      </div>
+      <button class="btn btn-primary" (click)="cargarEntrenamientos()">
+        <i class="bi bi-arrow-clockwise"></i> Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Contenido principal -->
+  @if (!cargando() && !error()) {
+    <!-- Filtro por categoría -->
+    <div class="filtro-categoria">
+      <div class="filtro-container">
+        <div class="filtro-header">
+          <i class="bi bi-funnel-fill"></i>
+          <h3>Filtrar por Categoría</h3>
+        </div>
+        <div class="filtro-body">
+          <select 
+            class="form-select filtro-select" 
+            [(ngModel)]="categoriaSeleccionada"
+            (change)="cambiarCategoria(categoriaSeleccionada())">
+            @for (cat of CATEGORIAS; track cat.valor) {
+              <option [value]="cat.valor">{{ cat.label }}</option>
+            }
+          </select>
+          @if (categoriaSeleccionada() !== 'todas') {
+            <button class="btn-limpiar" (click)="limpiarFiltro()">
+              <i class="bi bi-x-circle"></i>
+              Limpiar filtro
+            </button>
+          }
+        </div>
+        @if (categoriaSeleccionada() !== 'todas') {
+          <div class="filtro-activo">
+            <i class="bi bi-filter-circle-fill"></i>
+            Mostrando entrenamientos de: <strong>{{ categoriaSeleccionada() }}</strong>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Leyenda de niveles -->
+    <div class="niveles-info">
+      <h3><i class="bi bi-info-circle"></i> Niveles de Entrenamiento</h3>
+      <div class="niveles-badges">
+        <div class="nivel-badge nivel-principiante">
+          <i class="bi bi-star"></i>
+          <span>Principiante</span>
+          <small>Sin experiencia requerida</small>
+        </div>
+        <div class="nivel-badge nivel-intermedio">
+          <i class="bi bi-star-fill"></i>
+          <span>Intermedio</span>
+          <small>Conocimientos básicos</small>
+        </div>
+        <div class="nivel-badge nivel-avanzado">
+          <i class="bi bi-trophy-fill"></i>
+          <span>Avanzado</span>
+          <small>Experiencia competitiva</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horarios por día -->
+    <div class="horarios-container">
+      @for (dia of DIAS_SEMANA; track dia; let idx = $index) {
+        @if (diaTieneEntrenamientos(dia)) {
+          <div class="dia-section" [class]="getDiaColor(idx)">
+            <!-- Header del día -->
+            <div class="dia-header">
+              <div class="dia-nombre">
+                <i class="bi bi-calendar-day"></i>
+                <h2>{{ dia }}</h2>
+              </div>
+              <div class="dia-count">
+                <span class="badge">
+                  {{ obtenerEntrenamientosPorDia(dia).length }}
+                  @if (obtenerEntrenamientosPorDia(dia).length === 1) {
+                    entrenamiento
+                  } @else {
+                    entrenamientos
+                  }
+                </span>
+              </div>
+            </div>
+
+            <!-- Entrenamientos del día -->
+            <div class="entrenamientos-lista">
+              @for (entrenamiento of obtenerEntrenamientosPorDia(dia); track entrenamiento._id) {
+                <div class="entrenamiento-card">
+                  <!-- Horario destacado -->
+                  <div class="card-horario">
+                    <i class="bi bi-clock-fill"></i>
+                    <span class="horario-texto">{{ entrenamiento.horario }}</span>
+                  </div>
+
+                  <!-- Información principal -->
+                  <div class="card-body">
+                    <!-- Categorías -->
+                    <div class="card-row">
+                      <div class="card-label">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Categorías:</span>
+                      </div>
+                      <div class="card-value categorias-tags">
+                        @for (categoria of entrenamiento.categorias; track categoria) {
+                          <span class="categoria-tag">{{ categoria }}</span>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Nivel -->
+                    <div class="card-row">
+                      <div class="card-label">
+                        <i class="bi bi-bar-chart-fill"></i>
+                        <span>Nivel:</span>
+                      </div>
+                      <div class="card-value">
+                        <span [class]="'nivel-tag ' + getNivelBadgeClass(entrenamiento.nivel)">
+                          <i [class]="getNivelIcon(entrenamiento.nivel)"></i>
+                          {{ entrenamiento.nivel }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Lugar -->
+                    <div class="card-row">
+                      <div class="card-label">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span>Lugar:</span>
+                      </div>
+                      <div class="card-value">
+                        <strong>{{ entrenamiento.lugar }}</strong>
+                      </div>
+                    </div>
+
+                    <!-- Profesor -->
+                    <div class="card-row">
+                      <div class="card-label">
+                        <i class="bi bi-person-badge-fill"></i>
+                        <span>Profesor:</span>
+                      </div>
+                      <div class="card-value">
+                        {{ entrenamiento.profesorACargo }}
+                      </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    @if (entrenamiento.observaciones) {
+                      <div class="card-observaciones">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <span>{{ entrenamiento.observaciones }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Mensaje informativo final -->
+    @if (entrenamientos().length === 0) {
+      <div class="sin-datos">
+        <i class="bi bi-inbox"></i>
+        <h3>No hay entrenamientos programados</h3>
+        <p>Actualmente no hay entrenamientos disponibles. Por favor, vuelve más tarde.</p>
+      </div>
+    } @else if (categoriaSeleccionada() !== 'todas' && !hayEntrenamientosConFiltro()) {
+      <!-- No hay resultados para el filtro activo -->
+      <div class="sin-datos">
+        <i class="bi bi-search"></i>
+        <h3>No se encontraron entrenamientos</h3>
+        <p>No hay entrenamientos programados para la categoría <strong>{{ categoriaSeleccionada() }}</strong>.</p>
+        <button class="btn-volver" (click)="limpiarFiltro()">
+          <i class="bi bi-arrow-left"></i>
+          Ver todas las categorías
+        </button>
+      </div>
+    }
+  }
+</div>

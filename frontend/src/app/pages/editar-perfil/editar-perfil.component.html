@@ -1,0 +1,230 @@
+<div class="editar-perfil-page">
+  <header class="page-header">
+    <div class="header-content">
+      <div>
+        <h1>✏️ Editar Mi Perfil</h1>
+        <p>Actualiza tu información personal</p>
+      </div>
+      <button class="btn btn-back" (click)="cancelar()">
+        <i class="bi bi-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  </header>
+
+  <div class="page-content">
+    @if (cargando()) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-3">Cargando datos...</p>
+      </div>
+    } @else if (error() && !usuario()) {
+      <div class="alert alert-danger">
+        {{ error() }}
+      </div>
+    } @else if (usuario()) {
+      <div class="edit-form-container">
+        <form [formGroup]="formulario" (ngSubmit)="guardarCambios()">
+          
+          @if (error()) {
+            <div class="alert alert-danger">
+              {{ error() }}
+            </div>
+          }
+
+          <!-- Información Personal -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="bi bi-person"></i>
+              Información Personal
+            </h3>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nombre Completo *</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  [class.is-invalid]="campoInvalido('nombrePersonal')"
+                  formControlName="nombrePersonal"
+                />
+                @if (campoInvalido('nombrePersonal')) {
+                  <div class="invalid-feedback">El nombre es requerido</div>
+                }
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nombre de Usuario *</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  [class.is-invalid]="campoInvalido('nombreUsuario')"
+                  formControlName="nombreUsuario"
+                />
+                @if (campoInvalido('nombreUsuario')) {
+                  <div class="invalid-feedback">El nombre de usuario es requerido</div>
+                }
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Fecha de Nacimiento</label>
+                <input 
+                  type="date" 
+                  class="form-control"
+                  formControlName="fechaNacimiento"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Información de Contacto -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="bi bi-telephone"></i>
+              Información de Contacto
+            </h3>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Teléfono *</label>
+                <input 
+                  type="tel" 
+                  class="form-control"
+                  [class.is-invalid]="campoInvalido('telefono')"
+                  formControlName="telefono"
+                />
+                @if (campoInvalido('telefono')) {
+                  <div class="invalid-feedback">El teléfono es requerido</div>
+                }
+              </div>
+
+              <div class="col-12 mb-3">
+                <label class="form-label">Dirección *</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  [class.is-invalid]="campoInvalido('direccion')"
+                  formControlName="direccion"
+                />
+                @if (campoInvalido('direccion')) {
+                  <div class="invalid-feedback">La dirección es requerida</div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Información del Club -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="bi bi-trophy"></i>
+              Información del Club
+            </h3>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Posición *</label>
+                <select 
+                  class="form-select"
+                  [class.is-invalid]="campoInvalido('posicion')"
+                  formControlName="posicion"
+                >
+                  <option value="">Selecciona tu posición</option>
+                  <option *ngFor="let pos of posiciones" [value]="pos.value">
+                    {{ pos.label }}
+                  </option>
+                </select>
+                @if (campoInvalido('posicion')) {
+                  <div class="invalid-feedback">La posición es requerida</div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Información del Apoderado -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="bi bi-person-check"></i>
+              Información del Apoderado
+            </h3>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nombre del Apoderado</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  formControlName="nombreApoderado"
+                />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Teléfono del Apoderado</label>
+                <input 
+                  type="tel" 
+                  class="form-control"
+                  formControlName="telefonoApoderado"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Información de solo lectura -->
+          <div class="form-section readonly-section">
+            <h3 class="section-title">
+              <i class="bi bi-shield-lock"></i>
+              Información de Solo Lectura
+            </h3>
+            <div class="readonly-info">
+              <div class="readonly-item">
+                <label>Email</label>
+                <p>{{ usuario()!.email }}</p>
+              </div>
+              <div class="readonly-item">
+                <label>RUT</label>
+                <p>{{ usuario()!.rut }}</p>
+              </div>
+              <div class="readonly-item">
+                <label>Rol</label>
+                <span class="badge" [ngClass]="{
+                  'bg-success': usuario()!.rol === 'superadmin',
+                  'bg-primary': usuario()!.rol === 'administrador',
+                  'bg-secondary': usuario()!.rol === 'persona'
+                }">
+                  {{ usuario()!.rol }}
+                </span>
+              </div>
+            </div>
+            <small class="text-muted">
+              <i class="bi bi-info-circle"></i>
+              Email, RUT y Rol no pueden ser modificados
+            </small>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="form-actions">
+            <button 
+              type="button" 
+              class="btn btn-secondary" 
+              (click)="cancelar()"
+              [disabled]="guardando()"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="guardando() || formulario.invalid"
+            >
+              @if (guardando()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,191 @@
+<div class="crud-page">
+  <header class="page-header">
+    <h1>👥 Panel de Usuarios</h1>
+    <p>Gestión completa de usuarios del sistema</p>
+  </header>
+
+  <div class="page-content">
+    <!-- Buscador -->
+    <div class="search-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="Ej: 19133754-9 o email"
+          [(ngModel)]="busqueda"
+          (keyup.enter)="buscarUsuario()"
+        />
+        <button 
+          class="btn btn-primary" 
+          (click)="buscarUsuario()"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          Buscar
+        </button>
+        @if (usuarioEncontrado()) {
+          <button 
+            class="btn btn-secondary" 
+            (click)="limpiarBusqueda()"
+          >
+            Limpiar
+          </button>
+        }
+      </div>
+
+      @if (error()) {
+        <div class="alert alert-danger mt-3">
+          {{ error() }}
+        </div>
+      }
+    </div>
+
+    <!-- Resultado de búsqueda -->
+    @if (usuarioEncontrado()) {
+      <div class="user-card">
+        <div class="user-header">
+          <div class="user-avatar">
+            {{ usuarioEncontrado()!.nombrePersonal.charAt(0).toUpperCase() }}
+          </div>
+          <div class="user-info">
+            <h3>{{ usuarioEncontrado()!.nombrePersonal }}</h3>
+            <p class="text-muted mb-1">{{ usuarioEncontrado()!.email }}</p>
+            <span class="badge" [ngClass]="{
+              'bg-success': usuarioEncontrado()!.rol === 'superadmin',
+              'bg-primary': usuarioEncontrado()!.rol === 'administrador',
+              'bg-secondary': usuarioEncontrado()!.rol === 'persona'
+            }">
+              {{ usuarioEncontrado()!.rol }}
+            </span>
+          </div>
+        </div>
+
+        <div class="user-details">
+          <div class="detail-row">
+            <strong>RUT:</strong>
+            <span>{{ usuarioEncontrado()!.rut }}</span>
+          </div>
+          <div class="detail-row">
+            <strong>Usuario:</strong>
+            <span>{{ usuarioEncontrado()!.nombreUsuario }}</span>
+          </div>
+          <div class="detail-row">
+            <strong>Teléfono:</strong>
+            <span>{{ usuarioEncontrado()!.telefono }}</span>
+          </div>
+          <div class="detail-row">
+            <strong>Posición:</strong>
+            <span>{{ usuarioEncontrado()!.posicion }}</span>
+          </div>
+          <div class="detail-row">
+            <strong>Dirección:</strong>
+            <span>{{ usuarioEncontrado()!.direccion }}</span>
+          </div>
+        </div>
+
+        <div class="user-actions">
+          <button 
+            class="btn btn-action btn-edit" 
+            (click)="editarUsuario()"
+            title="Editar usuario"
+          >
+            <i class="bi bi-pencil-square"></i>
+            Editar
+          </button>
+          <button 
+            class="btn btn-action btn-role" 
+            (click)="abrirModalRol()"
+            title="Asignar rol"
+          >
+            <i class="bi bi-person-badge"></i>
+            Asignar Rol
+          </button>
+          <button 
+            class="btn btn-action btn-deactivate" 
+            (click)="abrirModalDesactivar()"
+            title="Desactivar usuario"
+          >
+            <i class="bi bi-person-x"></i>
+            Desactivar
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal para asignar rol -->
+@if (mostrarModalRol()) {
+  <div class="modal-overlay" (click)="cerrarModalRol()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Asignar Rol</h3>
+        <button class="btn-close" (click)="cerrarModalRol()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Selecciona el nuevo rol para <strong>{{ usuarioEncontrado()?.nombrePersonal }}</strong></p>
+        <select 
+          class="form-select" 
+          [(ngModel)]="rolSeleccionado"
+        >
+          @for (rol of roles; track rol) {
+            <option [value]="rol">{{ rol }}</option>
+          }
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarModalRol()">
+          Cancelar
+        </button>
+        <button 
+          class="btn btn-primary" 
+          (click)="guardarRol()"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal para desactivar usuario -->
+@if (mostrarModalDesactivar()) {
+  <div class="modal-overlay" (click)="cerrarModalDesactivar()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Desactivar Usuario</h3>
+        <button class="btn-close" (click)="cerrarModalDesactivar()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas desactivar a <strong>{{ usuarioEncontrado()?.nombrePersonal }}</strong>?</p>
+        <p class="text-danger">Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarModalDesactivar()">
+          No
+        </button>
+        <button 
+          class="btn btn-danger" 
+          (click)="confirmarDesactivar()"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          Sí, Desactivar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+

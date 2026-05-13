@@ -1,0 +1,113 @@
+<div class="historia-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Nuestra Historia</h1>
+      <p class="hero-subtitle">Más de {{ aniosExistencia }} años de pasión, dedicación y compromiso</p>
+      <div class="hero-year">
+        <span class="year-badge">Desde {{ anioFundacion }}</span>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>↓</span>
+    </div>
+  </section>
+
+  <!-- Sección de Logros -->
+  <section class="logros-section">
+    <div class="container">
+      <div class="logros-grid">
+        @for (logro of logros(); track logro.titulo) {
+          <div class="logro-card">
+            <div class="logro-icono">{{ logro.icono }}</div>
+            <div class="logro-cantidad">{{ logro.cantidad }}</div>
+            <div class="logro-titulo">{{ logro.titulo }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline de Historia -->
+  <section class="timeline-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Nuestra Trayectoria</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="timeline">
+        @for (seccion of secciones(); track seccion.anio; let i = $index) {
+          <div class="timeline-item" 
+               [class.reverse]="seccion.posicionImagen === 'right'"
+               [attr.data-aos]="'fade-up'"
+               [attr.data-aos-delay]="i * 100">
+            
+            <!-- Imagen -->
+            <div class="timeline-image">
+              <div class="image-wrapper">
+                <img [src]="seccion.imagenUrl" [alt]="seccion.titulo">
+                <div class="image-overlay">
+                  <span class="year-tag">{{ seccion.anio }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contenido -->
+            <div class="timeline-content">
+              <div class="content-card">
+                <div class="year-badge-small">{{ seccion.anio }}</div>
+                <h3 class="content-title">{{ seccion.titulo }}</h3>
+                <div class="content-divider"></div>
+                <p class="content-description">{{ seccion.descripcion }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de Valores -->
+  <section class="valores-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Nuestros Valores</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="valores-grid">
+        <div class="valor-card">
+          <div class="valor-icono">🤝</div>
+          <h4>Trabajo en Equipo</h4>
+          <p>Creemos en la fuerza del trabajo colaborativo y el apoyo mutuo para alcanzar nuestras metas.</p>
+        </div>
+        <div class="valor-card">
+          <div class="valor-icono">🎯</div>
+          <h4>Disciplina</h4>
+          <p>La constancia y el esfuerzo diario son la base del éxito deportivo y personal.</p>
+        </div>
+        <div class="valor-card">
+          <div class="valor-icono">❤️</div>
+          <h4>Pasión</h4>
+          <p>El amor por el fútbol y el compromiso con nuestros colores nos impulsan cada día.</p>
+        </div>
+        <div class="valor-card">
+          <div class="valor-icono">🌟</div>
+          <h4>Excelencia</h4>
+          <p>Buscamos siempre la mejora continua y el desarrollo integral de nuestros deportistas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Sé Parte de Nuestra Historia</h2>
+      <p>Ven y construye el futuro de Linares Colleges con nosotros</p>
+      <button class="btn-cta" routerLink="/register">Únete al Club</button>
+    </div>
+  </section>
+</div>

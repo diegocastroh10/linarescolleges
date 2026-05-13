@@ -1,0 +1,120 @@
+<div class="crud-page">
+  <header class="page-header">
+    <h1>👁️ Ver Usuarios</h1>
+    <p>Buscar y visualizar información de usuarios</p>
+  </header>
+
+  <div class="page-content">
+    <!-- Buscador -->
+    <div class="search-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="Ej: 19133754-9 o email"
+          [(ngModel)]="busqueda"
+          (keyup.enter)="buscarUsuario()"
+        />
+        <button 
+          class="btn btn-primary" 
+          (click)="buscarUsuario()"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          Buscar
+        </button>
+        @if (usuarioEncontrado()) {
+          <button 
+            class="btn btn-secondary" 
+            (click)="limpiarBusqueda()"
+          >
+            Limpiar
+          </button>
+        }
+      </div>
+
+      @if (error()) {
+        <div class="alert alert-danger mt-3">
+          {{ error() }}
+        </div>
+      }
+    </div>
+
+    <!-- Resultado de búsqueda -->
+    @if (usuarioEncontrado()) {
+      <div class="user-card">
+        <div class="user-header">
+          <div class="user-avatar">
+            {{ usuarioEncontrado()!.nombrePersonal.charAt(0).toUpperCase() }}
+          </div>
+          <div class="user-info">
+            <h3>{{ usuarioEncontrado()!.nombrePersonal }}</h3>
+            <p class="text-muted mb-1">{{ usuarioEncontrado()!.email }}</p>
+            <span class="badge" [ngClass]="{
+              'bg-success': usuarioEncontrado()!.rol === 'superadmin',
+              'bg-primary': usuarioEncontrado()!.rol === 'administrador',
+              'bg-secondary': usuarioEncontrado()!.rol === 'persona'
+            }">
+              {{ usuarioEncontrado()!.rol }}
+            </span>
+          </div>
+        </div>
+
+        <div class="user-details">
+          <div class="detail-row">
+            <strong>RUT:</strong>
+            <span>{{ usuarioEncontrado()!.rut }}</span>
+          </div>
+          <div class="detail-row">
+            <strong>Usuario:</strong>
+            <span>{{ usuarioEncontrado()!.nombreUsuario }}</span>
+          </div>
+          <div class="detail-row">
+            <strong>Teléfono:</strong>
+            <span>{{ usuarioEncontrado()!.telefono }}</span>
+          </div>
+          <div class="detail-row">
+            <strong>Posición:</strong>
+            <span>{{ usuarioEncontrado()!.posicion }}</span>
+          </div>
+          <div class="detail-row">
+            <strong>Dirección:</strong>
+            <span>{{ usuarioEncontrado()!.direccion }}</span>
+          </div>
+          @if (usuarioEncontrado()!.nombreApoderado) {
+            <div class="detail-row">
+              <strong>Apoderado:</strong>
+              <span>{{ usuarioEncontrado()!.nombreApoderado }}</span>
+            </div>
+          }
+          @if (usuarioEncontrado()!.telefonoApoderado) {
+            <div class="detail-row">
+              <strong>Tel. Apoderado:</strong>
+              <span>{{ usuarioEncontrado()!.telefonoApoderado }}</span>
+            </div>
+          }
+          @if (usuarioEncontrado()!.fechaNacimiento) {
+            <div class="detail-row">
+              <strong>Fecha Nacimiento:</strong>
+              <span>{{ usuarioEncontrado()!.fechaNacimiento | date:'dd/MM/yyyy' }}</span>
+            </div>
+          }
+          <div class="detail-row">
+            <strong>Fecha Registro:</strong>
+            <span>{{ usuarioEncontrado()!.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+
+        <div class="user-footer">
+          <div class="info-message">
+            <i class="bi bi-info-circle"></i>
+            <span>Solo el superadmin puede editar o modificar usuarios</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+

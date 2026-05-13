@@ -1,0 +1,257 @@
+<div class="crud-page">
+  <header class="page-header">
+    <h1>📰 Gestión de Noticias</h1>
+    <p>Administra el contenido de noticias del sitio web</p>
+  </header>
+
+  <div class="page-content">
+    <!-- Botón crear nueva - SIEMPRE VISIBLE -->
+    <div class="actions-bar">
+      <button class="btn-primary" (click)="abrirModalNueva()">
+        <span>➕</span> Nueva Noticia
+      </button>
+      @if (noticias().length > 0) {
+        <span class="total-noticias">Total: {{ noticias().length }} noticia{{ noticias().length !== 1 ? 's' : '' }}</span>
+      }
+    </div>
+
+    <!-- Indicador de carga -->
+    @if (cargando()) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando noticias...</p>
+      </div>
+    } @else {
+      <!-- Lista de noticias -->
+      @if (noticias().length > 0) {
+        <div class="noticias-grid">
+          @for (noticia of noticias(); track noticia._id) {
+            <div class="noticia-card">
+              <div class="noticia-imagen" 
+                   [class.horizontal]="noticia.orientacionImagen === 'horizontal'"
+                   [class.vertical]="noticia.orientacionImagen === 'vertical'">
+                <img [src]="noticia.imagenPortada" [alt]="noticia.titulo">
+                <div class="estado-badge" [class.publicada]="noticia.publicada">
+                  {{ noticia.publicada ? '✅ Publicada' : '❌ Borrador' }}
+                </div>
+              </div>
+              
+              <div class="noticia-info">
+                <h3>{{ noticia.titulo }}</h3>
+                <div class="metadata">
+                  <span>👤 {{ noticia.autor }}</span>
+                  <span>📅 {{ formatearFecha(noticia.fechaPublicacion) }}</span>
+                  <span>👁️ {{ noticia.visitas || 0 }} visitas</span>
+                </div>
+                
+                <div class="contenido-preview" [innerHTML]="noticia.contenido"></div>
+                
+                @if (noticia.urlInstagram) {
+                  <div class="instagram-badge">
+                    📸 Incluye Instagram
+                  </div>
+                }
+                
+                @if (noticia.auspiciadores && noticia.auspiciadores.length > 0) {
+                  <div class="sponsors-info">
+                    🏆 {{ noticia.auspiciadores.length }} auspiciador(es)
+                  </div>
+                }
+              </div>
+              
+              <div class="noticia-actions">
+                <button class="btn-edit" (click)="abrirModalEditar(noticia)">
+                  ✏️ Editar
+                </button>
+                <button class="btn-toggle" (click)="alternarPublicacion(noticia)">
+                  {{ noticia.publicada ? '🚫 Despublicar' : '✅ Publicar' }}
+                </button>
+                <button class="btn-delete" (click)="eliminar(noticia)">
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- Estado vacío -->
+        <div class="empty-state">
+          <div class="empty-icon">📝</div>
+          <h3>No hay noticias</h3>
+          <p>Comienza creando tu primera noticia</p>
+          <button class="btn-primary" (click)="abrirModalNueva()">
+            ➕ Crear Primera Noticia
+          </button>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+<!-- Modal de formulario -->
+@if (mostrarModal()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ noticiaEditando() ? '✏️ Editar Noticia' : '➕ Nueva Noticia' }}</h2>
+        <button class="btn-close" (click)="cerrarModal()">✖️</button>
+      </div>
+      
+      <form [formGroup]="formulario" class="modal-body">
+        <!-- Título -->
+        <div class="form-group">
+          <label>Título *</label>
+          <input 
+            type="text" 
+            formControlName="titulo" 
+            placeholder="Título de la noticia (mínimo 10 caracteres)"
+            class="form-control">
+          @if (formulario.get('titulo')?.invalid && formulario.get('titulo')?.touched) {
+            <span class="error-text">El título es requerido (mínimo 10 caracteres)</span>
+          }
+        </div>
+
+        <!-- Autor -->
+        <div class="form-group">
+          <label>Autor *</label>
+          <input 
+            type="text" 
+            formControlName="autor" 
+            placeholder="Nombre del autor"
+            class="form-control">
+          @if (formulario.get('autor')?.invalid && formulario.get('autor')?.touched) {
+            <span class="error-text">El autor es requerido</span>
+          }
+        </div>
+
+        <!-- Fecha de publicación -->
+        <div class="form-group">
+          <label>Fecha de Publicación *</label>
+          <input 
+            type="date" 
+            formControlName="fechaPublicacion" 
+            class="form-control">
+          @if (formulario.get('fechaPublicacion')?.invalid && formulario.get('fechaPublicacion')?.touched) {
+            <span class="error-text">La fecha es requerida</span>
+          }
+        </div>
+
+        <!-- Imagen Portada -->
+        <div class="form-group">
+          <label>Imagen de Portada *</label>
+          <div class="file-input-container">
+            <input 
+              type="file" 
+              accept="image/*"
+              (change)="onImagenFileChange($event)"
+              class="file-input"
+              id="imagenPortada">
+            <label for="imagenPortada" class="file-input-label">
+              📁 Seleccionar imagen (máx. 5MB)
+            </label>
+          </div>
+          @if (formulario.get('imagenPortada')?.invalid && formulario.get('imagenPortada')?.touched) {
+            <span class="error-text">La imagen de portada es requerida</span>
+          }
+          @if (imagenPreview()) {
+            <div class="image-preview">
+              <img [src]="imagenPreview()" alt="Preview">
+              <div class="preview-info">
+                <span>✅ Imagen cargada</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Orientación imagen -->
+        <div class="form-group">
+          <label>Orientación de Imagen *</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" formControlName="orientacionImagen" value="horizontal">
+              <span>📐 Horizontal (16:9)</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" formControlName="orientacionImagen" value="vertical">
+              <span>📱 Vertical (9:16)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Contenido -->
+        <div class="form-group">
+          <label>Contenido *</label>
+          <textarea 
+            formControlName="contenido" 
+            placeholder="Escribe el contenido de la noticia aquí (mínimo 50 caracteres)&#10;Puedes usar HTML básico: <strong>negrita</strong>, <em>cursiva</em>, <p>párrafos</p>"
+            rows="10"
+            class="form-control textarea-large"></textarea>
+          @if (formulario.get('contenido')?.invalid && formulario.get('contenido')?.touched) {
+            <span class="error-text">El contenido es requerido (mínimo 50 caracteres)</span>
+          }
+          <small>Puedes usar etiquetas HTML básicas para dar formato</small>
+        </div>
+
+        <!-- URL Instagram -->
+        <div class="form-group">
+          <label>URL de Instagram (opcional)</label>
+          <input 
+            type="url" 
+            formControlName="urlInstagram" 
+            placeholder="https://www.instagram.com/p/..."
+            class="form-control">
+          <small>Si deseas insertar un post de Instagram en la noticia</small>
+        </div>
+
+        <!-- Auspiciadores -->
+        <div class="form-group">
+          <label>Auspiciadores (opcional)</label>
+          <div class="file-input-container">
+            <input 
+              type="file" 
+              accept="image/*"
+              multiple
+              (change)="onAuspiciadoresFileChange($event)"
+              class="file-input"
+              id="auspiciadores">
+            <label for="auspiciadores" class="file-input-label">
+              📁 Seleccionar logos (máx. 2MB c/u)
+            </label>
+          </div>
+          <small>Puedes seleccionar múltiples imágenes de logos de auspiciadores</small>
+          
+          @if (auspiciadoresPreview().length > 0) {
+            <div class="auspiciadores-preview">
+              @for (logo of auspiciadoresPreview(); track $index) {
+                <div class="auspiciador-preview-item">
+                  <img [src]="logo" alt="Logo auspiciador">
+                  <button type="button" class="btn-remove-auspiciador" (click)="eliminarAuspiciador($index)">
+                    ✖️
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Publicada -->
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="publicada">
+            <span>✅ Publicar inmediatamente</span>
+          </label>
+          <small>Si no está marcada, la noticia quedará como borrador</small>
+        </div>
+      </form>
+      
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarModal()" [disabled]="guardando()">
+          Cancelar
+        </button>
+        <button class="btn-primary" (click)="guardar()" [disabled]="guardando()">
+          {{ guardando() ? '💾 Guardando...' : (noticiaEditando() ? '💾 Actualizar' : '💾 Guardar') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,51 @@
+<div class="admin-container">
+  <aside class="admin-sidebar">
+    <h2 class="sidebar-title">Panel de Administración</h2>
+    
+    <nav class="sidebar-nav">
+      <h3 class="nav-section">Gestión de Contenido</h3>
+      <a routerLink="/admin/noticias" routerLinkActive="active" class="nav-link">
+        <i class="icon">📰</i>
+        <span>Noticias</span>
+      </a>
+      <a routerLink="/admin/imagenes" routerLinkActive="active" class="nav-link">
+        <i class="icon">🖼️</i>
+        <span>Imágenes</span>
+      </a>
+      <a routerLink="/admin/entrenamientos" routerLinkActive="active" class="nav-link">
+        <i class="icon">🏀</i>
+        <span>Entrenamientos</span>
+      </a>
+
+      <h3 class="nav-section">Usuarios</h3>
+      @if (authService.isSuperAdmin()) {
+        <a routerLink="/admin/usuarios" routerLinkActive="active" class="nav-link">
+          <i class="icon">👥</i>
+          <span>Panel de Usuarios</span>
+        </a>
+      } @else {
+        <a routerLink="/admin/ver-usuarios" routerLinkActive="active" class="nav-link">
+          <i class="icon">👁️</i>
+          <span>Ver Usuarios</span>
+        </a>
+      }
+
+      <div class="user-info">
+        <div class="user-badge">
+          <span class="user-name">{{ authService.currentUser()?.nombreUsuario }}</span>
+          <span class="user-role" [class.superadmin]="authService.isSuperAdmin()">
+            {{ authService.isSuperAdmin() ? 'Superadmin' : 'Administrador' }}
+          </span>
+        </div>
+        <a routerLink="/inicio" class="btn-back">
+          <i class="icon">🏠</i>
+          Volver al Inicio
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="admin-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
