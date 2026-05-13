@@ -46,24 +46,21 @@
           },
           "configurations": {
             "production": {
+              "outputPath": "dist/frontend/browser",
+              "ssr": false,
+              "prerender": false,
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "50kb",
+                  "maximumError": "100kb"
                 }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
+              ]
             }
           },
           "defaultConfiguration": "production"
