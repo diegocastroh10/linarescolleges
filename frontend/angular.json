@@ -46,7 +46,7 @@
           },
           "configurations": {
             "production": {
-              "outputPath": "dist/frontend/browser",
+              "outputPath": "dist",
               "ssr": false,
               "prerender": false,
               "budgets": [
